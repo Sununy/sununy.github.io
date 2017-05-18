@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>解决listview层层嵌套的另外一种思路</title>
+  <meta name="description" content="最近项目涉及到订单的优化，比较忙没能及时更新博客，今天就吧自己在自己项目中遇到的listview嵌套的相关解决办法展现给大家。废话不多说，先给大家看下产品给的设计ui图：">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="解决listview层层嵌套的另外一种思路">
+  <meta name="twitter:description" content="最近项目涉及到订单的优化，比较忙没能及时更新博客，今天就吧自己在自己项目中遇到的listview嵌套的相关解决办法展现给大家。废话不多说，先给大家看下产品给的设计ui图：">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="解决listview层层嵌套的另外一种思路">
+  <meta property="og:description" content="最近项目涉及到订单的优化，比较忙没能及时更新博客，今天就吧自己在自己项目中遇到的listview嵌套的相关解决办法展现给大家。废话不多说，先给大家看下产品给的设计ui图：">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2017/05/about-listview-1/">
+  <link rel="alternate" type="application/rss+xml" title="Hukie's Blog" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Hukie's Blog 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Hukie's Blog logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Hukie's Blog" class="blog-button">Hukie's Blog</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">A Blog About Android And Notes.</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">Learning To Be A Better Android Developer.</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        <p class="panel-cover__description">Thank For Your Visit.</p>
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/sununy" title="@sununy 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:whutzhanghu@163.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-black"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2017-05-10 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2017-05-10</time> &#8226; <span class="post-meta__tags tags"></span>
+    </div>
+    <h1 class="post-title">解决listview层层嵌套的另外一种思路</h1>
+  </header>
+
+  <section class="post">
+    <p>最近项目涉及到订单的优化，比较忙没能及时更新博客，今天就吧自己在自己项目中遇到的listview嵌套的相关解决办法展现给大家。废话不多说，先给大家看下产品给的设计ui图：</p>
+
+<p><img src="/resourse/我的订单UI图.jpeg" alt="我的订单UI图.jpeg" /></p>
+
+<p>这是商品订单列表的一个效果图，下面我们来分析一下这个效果图，就会发现里面涉及到了层层的嵌套，来看下面一张图：</p>
+
+<p><img src="/resourse/我的订单分析图.png" alt="我的订单分析图.png" /></p>
+
+<p>上面的标志我想大家都能看懂，其实里里外外涉及到三层的嵌套。那我们来分析一下，应该如何去实现呢？</p>
+
+<p>第一层：我想这个是毋庸置疑的要用listview或者RecycleView或者Gridview吧，这三个你可以选一个，由于我们的工程还是eclipse在开发，我就用的项目中自带XlistView，   不过不管用什么都可以的。</p>
+
+<p>第二层：仔细一看这个第二层还是要用listview的啊，是不是瞬间就有一种懵逼的感觉啊。</p>
+
+<p>第三层：fuck，咋一看又要用个gridview嵌套在里面呢？</p>
+
+<p>这样一分析，是不是瞬间就不想写代码了呢 ？</p>
+
+<p>山穷水复疑无路，柳暗花明又一村。当进入死胡同的时候，何妨不转换下思路呢？我当时想的就是不用层层嵌套，我动态的添加布局应该也能实现，敢想敢做，我一颗也没耽误就去码代码了。</p>
+
+<p>第一层的item的布局先写出来：</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>&lt;?xml <span class="nv">version</span><span class="o">=</span><span class="s2">"1.0"</span> <span class="nv">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span>?&gt;  
+&lt;LinearLayout xmlns:android<span class="o">=</span><span class="s2">"http://schemas.android.com/apk/res/android"</span>  
+    android:layout_width<span class="o">=</span><span class="s2">"match_parent"</span>  
+    android:layout_height<span class="o">=</span><span class="s2">"match_parent"</span>  
+    android:orientation<span class="o">=</span><span class="s2">"vertical"</span> &gt;  
+  
+    &lt;View  
+        android:layout_width<span class="o">=</span><span class="s2">"match_parent"</span>  
+        android:layout_height<span class="o">=</span><span class="s2">"8dp"</span>  
+        android:background<span class="o">=</span><span class="s2">"#F7F7F7"</span> /&gt;  
+  
+    &lt;LinearLayout  
+        android:layout_width<span class="o">=</span><span class="s2">"match_parent"</span>  
+        android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+        android:orientation<span class="o">=</span><span class="s2">"horizontal"</span>  
+        android:paddingBottom<span class="o">=</span><span class="s2">"8dp"</span>  
+        android:paddingTop<span class="o">=</span><span class="s2">"8dp"</span> &gt;  
+  
+        &lt;View  
+            android:layout_width<span class="o">=</span><span class="s2">"4dp"</span>  
+            android:layout_height<span class="o">=</span><span class="s2">"16dp"</span>  
+            android:background<span class="o">=</span><span class="s2">"#FF4B0F"</span> /&gt;  
+  
+        &lt;TextView  
+            android:id<span class="o">=</span><span class="s2">"@+id/tv_order_time"</span>  
+            android:layout_width<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_marginLeft<span class="o">=</span><span class="s2">"12dp"</span>  
+            android:text<span class="o">=</span><span class="s2">"2017-4-7"</span>  
+            android:textSize<span class="o">=</span><span class="s2">"13sp"</span>  
+            android:textStyle<span class="o">=</span><span class="s2">"bold"</span> /&gt;  
+  
+        &lt;TextView  
+            android:layout_width<span class="o">=</span><span class="s2">"0dp"</span>  
+            android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_weight<span class="o">=</span><span class="s2">"1"</span> /&gt;  
+  
+        &lt;TextView  
+            android:id<span class="o">=</span><span class="s2">"@+id/tv_order_paynum"</span>  
+            android:layout_width<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_marginRight<span class="o">=</span><span class="s2">"8dp"</span>  
+            android:text<span class="o">=</span><span class="s2">"支付订单号：SS22344dada4445"</span>  
+            android:textStyle<span class="o">=</span><span class="s2">"bold"</span>  
+            android:textSize<span class="o">=</span><span class="s2">"13sp"</span> /&gt;  
+    &lt;/LinearLayout&gt;  
+  
+&lt;span <span class="nv">style</span><span class="o">=</span><span class="s2">"color:#FF0000;"</span>&gt;&lt;strong&gt; &lt;span <span class="nv">style</span><span class="o">=</span><span class="s2">"font-size:18px;"</span>&gt;   &lt;LinearLayout  
+        android:id<span class="o">=</span><span class="s2">"@+id/linear_container"</span>  
+        android:layout_width<span class="o">=</span><span class="s2">"match_parent"</span>  
+        android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+        android:orientation<span class="o">=</span><span class="s2">"vertical"</span> &gt;  
+    &lt;/LinearLayout&gt;&lt;/span&gt;&lt;/strong&gt;&lt;/span&gt;  
+  
+    &lt;TextView  
+        android:id<span class="o">=</span><span class="s2">"@+id/tv_line"</span>  
+        android:layout_width<span class="o">=</span><span class="s2">"match_parent"</span>  
+        android:layout_height<span class="o">=</span><span class="s2">"0.5dp"</span>  
+        android:layout_marginLeft<span class="o">=</span><span class="s2">"8dp"</span>  
+        android:layout_marginRight<span class="o">=</span><span class="s2">"8dp"</span>  
+        android:background<span class="o">=</span><span class="s2">"#E7E0E3"</span> /&gt;  
+  
+    &lt;LinearLayout  
+        android:id<span class="o">=</span><span class="s2">"@+id/linear_money"</span>  
+        android:layout_width<span class="o">=</span><span class="s2">"match_parent"</span>  
+        android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+        android:layout_marginTop<span class="o">=</span><span class="s2">"8dp"</span>  
+        android:gravity<span class="o">=</span><span class="s2">"end"</span>  
+        android:orientation<span class="o">=</span><span class="s2">"horizontal"</span> &gt;  
+  
+        &lt;TextView  
+            android:id<span class="o">=</span><span class="s2">"@+id/tv_goods_num"</span>  
+            android:layout_width<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_centerInParent<span class="o">=</span><span class="s2">"true"</span>  
+            android:layout_marginLeft<span class="o">=</span><span class="s2">"12dp"</span>  
+            android:text<span class="o">=</span><span class="s2">"共7件商品"</span>  
+            android:textColor<span class="o">=</span><span class="s2">"#767480"</span> /&gt;  
+  
+        &lt;TextView  
+            android:layout_width<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_centerInParent<span class="o">=</span><span class="s2">"true"</span>  
+            android:layout_marginLeft<span class="o">=</span><span class="s2">"12dp"</span>  
+            android:text<span class="o">=</span><span class="s2">"合计："</span>  
+            android:textColor<span class="o">=</span><span class="s2">"#767480"</span> /&gt;  
+  
+        &lt;TextView  
+            android:id<span class="o">=</span><span class="s2">"@+id/tv_goods_total_money"</span>  
+            android:layout_width<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_centerInParent<span class="o">=</span><span class="s2">"true"</span>  
+            android:layout_marginLeft<span class="o">=</span><span class="s2">"4dp"</span>  
+            android:paddingRight<span class="o">=</span><span class="s2">"8dp"</span>  
+            android:text<span class="o">=</span><span class="s2">"￥ 3850.00"</span>  
+            android:textStyle<span class="o">=</span><span class="s2">"bold"</span> /&gt;  
+  
+        &lt;TextView  
+            android:id<span class="o">=</span><span class="s2">"@+id/tv_goods_transfee"</span>  
+            android:visibility<span class="o">=</span><span class="s2">"gone"</span>  
+            android:layout_width<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_centerInParent<span class="o">=</span><span class="s2">"true"</span>  
+            android:layout_marginRight<span class="o">=</span><span class="s2">"8dp"</span>  
+            android:text<span class="o">=</span><span class="s2">"（含运费 ￥ 5）"</span>  
+            android:textColor<span class="o">=</span><span class="s2">"#767480"</span> /&gt;  
+    &lt;/LinearLayout&gt;  
+  
+    &lt;LinearLayout  
+        android:id<span class="o">=</span><span class="s2">"@+id/linear_order_button"</span>  
+        android:layout_width<span class="o">=</span><span class="s2">"match_parent"</span>  
+        android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+        android:layout_marginTop<span class="o">=</span><span class="s2">"8dp"</span>  
+        android:gravity<span class="o">=</span><span class="s2">"end"</span>  
+        android:orientation<span class="o">=</span><span class="s2">"horizontal"</span>  
+        android:paddingBottom<span class="o">=</span><span class="s2">"12dp"</span>  
+        android:paddingLeft<span class="o">=</span><span class="s2">"4dp"</span>  
+        android:paddingRight<span class="o">=</span><span class="s2">"8dp"</span>  
+        android:paddingTop<span class="o">=</span><span class="s2">"4dp"</span> &gt;  
+  
+        &lt;TextView  
+            android:id<span class="o">=</span><span class="s2">"@+id/tv_order_cancle"</span>  
+            android:layout_width<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_marginRight<span class="o">=</span><span class="s2">"@dimen/size_10dp"</span>  
+            android:background<span class="o">=</span><span class="s2">"@drawable/shape_light_bg"</span>  
+            android:paddingBottom<span class="o">=</span><span class="s2">"6dp"</span>  
+            android:paddingLeft<span class="o">=</span><span class="s2">"8dp"</span>  
+            android:paddingRight<span class="o">=</span><span class="s2">"6dp"</span>  
+            android:paddingTop<span class="o">=</span><span class="s2">"6dp"</span>  
+            android:text<span class="o">=</span><span class="s2">"取消订单"</span>  
+            android:textColor<span class="o">=</span><span class="s2">"#9291A4"</span>  
+            android:textSize<span class="o">=</span><span class="s2">"@dimen/text_size14"</span> /&gt;  
+  
+        &lt;TextView  
+            android:id<span class="o">=</span><span class="s2">"@+id/tv_order_check"</span>  
+            android:layout_width<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:background<span class="o">=</span><span class="s2">"@drawable/shape_light_bg"</span>  
+            android:paddingBottom<span class="o">=</span><span class="s2">"6dp"</span>  
+            android:paddingLeft<span class="o">=</span><span class="s2">"12dp"</span>  
+            android:paddingRight<span class="o">=</span><span class="s2">"10dp"</span>  
+            android:paddingTop<span class="o">=</span><span class="s2">"6dp"</span>  
+            android:text<span class="o">=</span><span class="s2">"查看订单"</span>  
+            android:textColor<span class="o">=</span><span class="s2">"#9291A4"</span>  
+            android:textSize<span class="o">=</span><span class="s2">"@dimen/text_size14"</span> /&gt;  
+  
+        &lt;TextView  
+            android:id<span class="o">=</span><span class="s2">"@+id/tv_order_pay"</span>  
+            android:layout_width<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_marginLeft<span class="o">=</span><span class="s2">"10dp"</span>  
+            android:background<span class="o">=</span><span class="s2">"@drawable/shape_eacrad_pay"</span>  
+            android:paddingBottom<span class="o">=</span><span class="s2">"6dp"</span>  
+            android:paddingLeft<span class="o">=</span><span class="s2">"8dp"</span>  
+            android:paddingRight<span class="o">=</span><span class="s2">"6dp"</span>  
+            android:paddingTop<span class="o">=</span><span class="s2">"6dp"</span>  
+            android:text<span class="o">=</span><span class="s2">"立即付款"</span>  
+            android:textColor<span class="o">=</span><span class="s2">"#FF6893"</span>  
+            android:textSize<span class="o">=</span><span class="s2">"@dimen/text_size14"</span> /&gt;  
+    &lt;/LinearLayout&gt;  
+    &lt;ImageView  
+        android:id<span class="o">=</span><span class="s2">"@+id/order_end_iv"</span>  
+        android:layout_width<span class="o">=</span><span class="s2">"match_parent"</span>  
+        android:layout_height<span class="o">=</span><span class="s2">"30dp"</span>  
+        android:layout_marginBottom<span class="o">=</span><span class="s2">"8dp"</span>  
+        android:contentDescription<span class="o">=</span><span class="s2">"@null"</span>  
+        android:src<span class="o">=</span><span class="s2">"@drawable/ic_nomore"</span> /&gt;  
+&lt;/LinearLayout&gt;
+
+</code></pre>
+</div>
+
+<p>上面的额布局代码中有一段我标红的不知道大家看见没？这个只是一个布局的容器，现在里面什么都没有，只是待会再代码中动态添加子布局的父容器而已.</p>
+
+<p>大家在看第二层嵌套的布局：<code class="highlighter-rouge">add_order_view：</code></p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>&lt;?xml <span class="nv">version</span><span class="o">=</span><span class="s2">"1.0"</span> <span class="nv">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span>?&gt;  
+&lt;LinearLayout xmlns:android<span class="o">=</span><span class="s2">"http://schemas.android.com/apk/res/android"</span>  
+    android:layout_width<span class="o">=</span><span class="s2">"match_parent"</span>  
+    android:layout_height<span class="o">=</span><span class="s2">"match_parent"</span>  
+    android:orientation<span class="o">=</span><span class="s2">"vertical"</span> &gt;  
+  
+    &lt;TextView  
+        android:id<span class="o">=</span><span class="s2">"@+id/tv_order_ordernum"</span>  
+        android:layout_width<span class="o">=</span><span class="s2">"match_parent"</span>  
+        android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+        android:background<span class="o">=</span><span class="s2">"#F7F7F7"</span>  
+        android:paddingTop<span class="o">=</span><span class="s2">"8dp"</span>  
+        android:paddingRight<span class="o">=</span><span class="s2">"8dp"</span>  
+        android:paddingLeft<span class="o">=</span><span class="s2">"16dp"</span>  
+        android:paddingBottom<span class="o">=</span><span class="s2">"8dp"</span>  
+        android:text<span class="o">=</span><span class="s2">"订单编号：SS22344dada4445"</span>  
+        android:textColor<span class="o">=</span><span class="s2">"#767480"</span>  
+        android:textSize<span class="o">=</span><span class="s2">"14sp"</span> /&gt;  
+  
+    &lt;LinearLayout  
+        android:layout_width<span class="o">=</span><span class="s2">"match_parent"</span>  
+        android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+        android:gravity<span class="o">=</span><span class="s2">"center_vertical"</span>  
+        android:orientation<span class="o">=</span><span class="s2">"horizontal"</span>  
+        android:paddingTop<span class="o">=</span><span class="s2">"8dp"</span>  
+        android:paddingRight<span class="o">=</span><span class="s2">"8dp"</span>  
+        android:paddingLeft<span class="o">=</span><span class="s2">"16dp"</span>  
+        android:paddingBottom<span class="o">=</span><span class="s2">"8dp"</span> &gt;  
+  
+        &lt;ImageView  
+            android:layout_width<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:src<span class="o">=</span><span class="s2">"@drawable/bq"</span> /&gt;  
+  
+        &lt;TextView  
+            android:id<span class="o">=</span><span class="s2">"@+id/tv_order_merchant_name"</span>  
+            android:layout_width<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_marginLeft<span class="o">=</span><span class="s2">"8dp"</span>  
+            android:text<span class="o">=</span><span class="s2">"美罗城购物中心"</span>  
+            android:textColor<span class="o">=</span><span class="s2">"#767480"</span>  
+            android:textSize<span class="o">=</span><span class="s2">"14sp"</span> /&gt;  
+  
+        &lt;TextView  
+            android:layout_width<span class="o">=</span><span class="s2">"0dp"</span>  
+            android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_weight<span class="o">=</span><span class="s2">"1"</span> /&gt;  
+  
+        &lt;TextView  
+            android:id<span class="o">=</span><span class="s2">"@+id/tv_order_status"</span>  
+            android:layout_width<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_marginLeft<span class="o">=</span><span class="s2">"16dp"</span>  
+            android:text<span class="o">=</span><span class="s2">"待支付"</span>  
+            android:textColor<span class="o">=</span><span class="s2">"#FF6893"</span>  
+            android:textSize<span class="o">=</span><span class="s2">"14sp"</span>  
+            android:textStyle<span class="o">=</span><span class="s2">"bold"</span> /&gt;  
+    &lt;/LinearLayout&gt;  
+  
+&lt;span <span class="nv">style</span><span class="o">=</span><span class="s2">"font-size:18px;color:#FF0000;"</span>&gt;&lt;strong&gt;    &lt;HorizontalScrollView  
+        android:layout_width<span class="o">=</span><span class="s2">"wrap_content"</span>  
+        android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+        android:scrollbars<span class="o">=</span><span class="s2">"@null"</span>  
+        android:padding<span class="o">=</span><span class="s2">"8dp"</span> &gt;  
+  
+        &lt;LinearLayout  
+            android:id<span class="o">=</span><span class="s2">"@+id/linear_group"</span>  
+            android:layout_width<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:orientation<span class="o">=</span><span class="s2">"horizontal"</span> &gt;  
+  
+        &lt;/LinearLayout&gt;  
+    &lt;/HorizontalScrollView&gt;&lt;/strong&gt;&lt;/span&gt;  
+  
+<span class="gp">&lt;/LinearLayout&gt; </span>
+</code></pre>
+</div>
+
+<p>啥都没有是吧？同时也要看我布局标红放大的部分，HorizontalScrollView能保证图片的水平滚动，里面的额linearlayout也是动态添加布局的容器。</p>
+
+<p>接下来就是最里面一层，其实很简单的布局就是一张图片，我也贴出来给大家看看：</p>
+
+<p><code class="highlighter-rouge">add_order_view_image：</code></p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code>&lt;?xml <span class="nv">version</span><span class="o">=</span><span class="s2">"1.0"</span> <span class="nv">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span>?&gt;  
+&lt;RelativeLayout xmlns:android<span class="o">=</span><span class="s2">"http://schemas.android.com/apk/res/android"</span>  
+    android:layout_width<span class="o">=</span><span class="s2">"wrap_content"</span>  
+    android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+    android:padding<span class="o">=</span><span class="s2">"8dp"</span> &gt;  
+  
+    &lt;RelativeLayout  
+        android:id<span class="o">=</span><span class="s2">"@+id/rela_1"</span>  
+        android:layout_width<span class="o">=</span><span class="s2">"80dp"</span>  
+        android:layout_height<span class="o">=</span><span class="s2">"80dp"</span> &gt;  
+  
+        &lt;ImageView  
+            android:id<span class="o">=</span><span class="s2">"@+id/iv_goods"</span>  
+            android:layout_width<span class="o">=</span><span class="s2">"80dp"</span>  
+            android:layout_height<span class="o">=</span><span class="s2">"80dp"</span>  
+            android:layout_marginTop<span class="o">=</span><span class="s2">"6dp"</span>  
+            android:src<span class="o">=</span><span class="s2">"@drawable/df2"</span> /&gt;  
+  
+        &lt;ImageView  
+            android:id<span class="o">=</span><span class="s2">"@+id/iv_gift"</span>  
+            android:layout_width<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_marginTop<span class="o">=</span><span class="s2">"6dp"</span>  
+            android:src<span class="o">=</span><span class="s2">"@drawable/goods_tag"</span> /&gt;  
+  
+  
+        &lt;TextView  
+            android:id<span class="o">=</span><span class="s2">"@+id/tv_status"</span>  
+            android:layout_width<span class="o">=</span><span class="s2">"80dp"</span>  
+            android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_alignBottom<span class="o">=</span><span class="s2">"@+id/iv_goods"</span>  
+            android:layout_centerHorizontal<span class="o">=</span><span class="s2">"true"</span>  
+            android:layout_centerVertical<span class="o">=</span><span class="s2">"true"</span>  
+            android:text<span class="o">=</span><span class="s2">"已售罄"</span>  
+            android:background<span class="o">=</span><span class="s2">"#A6000000"</span>  
+            android:gravity<span class="o">=</span><span class="s2">"center"</span>  
+            android:textColor<span class="o">=</span><span class="s2">"@color/White"</span>  
+            android:textSize<span class="o">=</span><span class="s2">"12sp"</span> /&gt;  
+    &lt;/RelativeLayout&gt;  
+  
+        &lt;TextView  
+            android:id<span class="o">=</span><span class="s2">"@+id/tv_number"</span>  
+            android:layout_width<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:background<span class="o">=</span><span class="s2">"@drawable/shape_order_list_circle"</span>  
+            android:layout_marginLeft<span class="o">=</span><span class="s2">"-12dp"</span>  
+            android:layout_toRightOf<span class="o">=</span><span class="s2">"@+id/rela_1"</span>  
+            android:padding<span class="o">=</span><span class="s2">"4dp"</span>  
+            android:text<span class="o">=</span><span class="s2">"17"</span>  
+            android:textColor<span class="o">=</span><span class="s2">"@color/White"</span>  
+            android:textSize<span class="o">=</span><span class="s2">"12sp"</span> /&gt;  
+       &lt;TextView  
+            android:id<span class="o">=</span><span class="s2">"@+id/tv_descripe"</span>  
+            android:layout_width<span class="o">=</span><span class="s2">"200dp"</span>  
+            android:layout_height<span class="o">=</span><span class="s2">"wrap_content"</span>  
+            android:layout_toRightOf<span class="o">=</span><span class="s2">"@+id/rela_1"</span>  
+            android:layout_centerInParent<span class="o">=</span><span class="s2">"true"</span>  
+            android:padding<span class="o">=</span><span class="s2">"4dp"</span>  
+            android:layout_marginRight<span class="o">=</span><span class="s2">"30dp"</span>  
+            android:visibility<span class="o">=</span><span class="s2">"gone"</span>  
+            android:text<span class="o">=</span><span class="s2">"我是商品"</span>  
+            android:textSize<span class="o">=</span><span class="s2">"12sp"</span> /&gt;  
+&lt;/RelativeLayout&gt;
+</code></pre>
+</div>
+
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">最近的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2017/05/about-listview-2/" title="link to 解决listview层层嵌套的另外一种思路(细节说明)">解决listview层层嵌套的另外一种思路(细节说明)</a></h2>
+       <p class="excerpt">上一篇提到用动态添加布局来解决listview的层层嵌套，由于这种做法我用到过很多次，所以做起来也很顺手，但是这一次的需求和上一次的稍微有点不同，导致最后快要提测的时候功能还没实现，当时就急了。。。。先给大家看下上次实现的效果:由于上一次的gif没有给大家展示横向的滑动，今天给补上。但是现在我想问大家如果点击横向滑动的那几个小图片，会跳转到哪呢？下面再给大家展示：大家可以看到不管点击哪个图片都是跳到订单详情界面，为什么呢？因为点击事件是对整个的linearlayout做的处理，如果想对单独...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-05-18 00:00:00 +0800" class="post-list__meta--date date">2017-05-18</time> &#8226; <span class="post-list__meta--tags tags"></span><a class="btn-border-small" href=/2017/05/about-listview-2/>继续阅读</a></div>
+   </div>
+   
+   
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2017/05/about-listview-1/";
+        this.page.identifier = "/2017/05/about-listview-1/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2017-05-18 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

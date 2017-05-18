@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>Hukie&#39;s Blog</title>
+  <meta name="description" content="Learning To Be A Better Android Developer.">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Hukie&#39;s Blog">
+  <meta name="twitter:description" content="Learning To Be A Better Android Developer.">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Hukie&#39;s Blog">
+  <meta property="og:description" content="Learning To Be A Better Android Developer.">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/">
+  <link rel="alternate" type="application/rss+xml" title="Hukie's Blog" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover " style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Hukie's Blog 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Hukie's Blog logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Hukie's Blog" class="blog-button">Hukie's Blog</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">A Blog About Android And Notes.</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">Learning To Be A Better Android Developer.</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        <p class="panel-cover__description">Thank For Your Visit.</p>
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/sununy" title="@sununy 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:whutzhanghu@163.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-black"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <div class="main-post-list hidden">
+
+  <ol class="post-list">
+    
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2017/05/about-listview-2/" title="访问 解决listview层层嵌套的另外一种思路(细节说明)">解决listview层层嵌套的另外一种思路(细节说明)</a></h2>
+      <p class="excerpt">上一篇提到用动态添加布局来解决listview的层层嵌套，由于这种做法我用到过很多次，所以做起来也很顺手，但是这一次的需求和上一次的稍微有点不同，导致最后快要提测的时候功能还没实现，当时就急了。。。。先给大家看下上次实现的效果:由于上一次的gif没有给大家展示横向的滑动，今天给补上。但是现在我想问大家如果点击横向滑动的那几个小图片，会跳转到哪呢？下面再给大家展示：大家可以看到不管点击哪个图片都是跳到订单详情界面，为什么呢？因为点击事件是对整个的linearlayout做的处理，如果想对单独...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2017-05-18 00:00:00 +0800" class="post-list__meta--date date">2017-05-18</time> &#8226; <span class="post-list__meta--tags tags"></span><a class="btn-border-small" href=/2017/05/about-listview-2/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+    <li>
+      <h2 class="post-list__post-title post-title"><a href="/2017/05/about-listview-1/" title="访问 解决listview层层嵌套的另外一种思路">解决listview层层嵌套的另外一种思路</a></h2>
+      <p class="excerpt">最近项目涉及到订单的优化，比较忙没能及时更新博客，今天就吧自己在自己项目中遇到的listview嵌套的相关解决办法展现给大家。废话不多说，先给大家看下产品给的设计ui图：这是商品订单列表的一个效果图，下面我们来分析一下这个效果图，就会发现里面涉及到了层层的嵌套，来看下面一张图：上面的标志我想大家都能看懂，其实里里外外涉及到三层的嵌套。那我们来分析一下，应该如何去实现呢？第一层：我想这个是毋庸置疑的要用listview或者RecycleView或者Gridview吧，这三个你可以选一个，由于...&hellip;</p>
+      <div class="post-list__meta"><time datetime="2017-05-10 00:00:00 +0800" class="post-list__meta--date date">2017-05-10</time> &#8226; <span class="post-list__meta--tags tags"></span><a class="btn-border-small" href=/2017/05/about-listview-1/>继续阅读</a></div>
+      <hr class="post-list__divider" />
+    </li>
+    
+  </ol>
+
+  <hr class="post-list__divider " />
+
+<nav class="pagination" role="navigation">
+    
+    <span class="pagination__page-number">1 / 1</span>
+    
+</nav>
+
+
+</div>
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2017-05-18 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>

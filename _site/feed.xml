@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Hukie's Blog</title>
+    <description>Learning To Be A Better Android Developer.</description>
+    <link>http://localhost:4000/</link>
+    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Thu, 18 May 2017 17:02:55 +0800</pubDate>
+    <lastBuildDate>Thu, 18 May 2017 17:02:55 +0800</lastBuildDate>
+    <generator>Jekyll v3.4.1</generator>
+    
+      <item>
+        <title>解决listview层层嵌套的另外一种思路(细节说明)</title>
+        <description>&lt;p&gt;上一篇提到用动态添加布局来解决listview的层层嵌套，由于这种做法我用到过很多次，所以做起来也很顺手，但是这一次的需求和上一次的稍微有点不同，导致最后快要提测的时候功能还没实现，当时就急了。。。。&lt;/p&gt;
+
+&lt;p&gt;先给大家看下上次实现的效果:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/resourse/about-listview(1).gif&quot; alt=&quot;about-listview(1).gif&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;由于上一次的gif没有给大家展示横向的滑动，今天给补上。
+但是现在我想问大家如果点击横向滑动的那几个小图片，会跳转到哪呢？
+下面再给大家展示：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/resourse/about-listview(2).gif&quot; alt=&quot;about-listview(2).gif&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;大家可以看到不管点击哪个图片都是跳到订单详情界面，为什么呢？因为点击事件是对整个的linearlayout做的处理，如果想对单独的imageview进行点击事件呢？&lt;/p&gt;
+
+&lt;p&gt;可能小伙伴会直接说直接对imageview加上点击事件不就得了？确实是加上点击事件可以跳转，但是如果问题这么简单我也不会问大家了，我问大家一个问题，你如何知晓你是点击的哪个位置？大家看上面的示意图，第一行有6个图片，你随便点击一张图片，你可能知道点击的是哪一张，但是程序知道你点击的位置吗？如果你要把你点击的这张图片背后的信息传递到下个界面去，怎么办呢？其实，这就是困扰我的问题，当时没有第一时间想到解决办法，心里很慌，最后冷静下来才找到解决方案，下面大家再看效果：&lt;/p&gt;
+
+&lt;p&gt;大家看的见点击不同的售后状态跳转到售后详情界面的展现也是不一样的，那就说明已经找到了点击的位置，同样也正确的把相关的信息传递过去了。
+ 那具体的是怎么实现的呢？其实就是在上一次的代码中加了一句代码：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;int j &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 0; j &amp;lt; productList.size&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;; j++&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+                View viewTwo &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; mInflater.inflate&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;R.layout.add_order_view_image, null&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                ImageView iv_goods &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;ImageView&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; viewTwo.findViewById&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;R.id.iv_goods&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                ImageView iv_gift &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;ImageView&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; viewTwo.findViewById&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;R.id.iv_gift&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                TextView tv_number &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;TextView&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; viewTwo.findViewById&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;R.id.tv_number&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                final TextView tv_status &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;TextView&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; viewTwo.findViewById&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;R.id.tv_status&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                TextView tv_descripe &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;TextView&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; viewTwo.findViewById&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;R.id.tv_descripe&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;productList.size&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; 1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+                    tv_descripe.setVisibility&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;View.VISIBLE&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                    tv_descripe.setText&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;productList.get&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;j&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getProductName&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt;;  
+                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+                    tv_descripe.setVisibility&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;View.GONE&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;  
+                ImageUtils.display&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;R.drawable.df2, productList.get&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;j&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getProductImage&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;, iv_goods&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;0&quot;&lt;/span&gt;.equals&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;productList.get&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;j&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getIsGift&lt;span class=&quot;o&quot;&gt;()))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; // 不是赠品  
+                    iv_gift.setVisibility&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;View.GONE&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+                    iv_gift.setVisibility&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;View.VISIBLE&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;  
+                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;productList.get&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;j&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getProductNumber&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;.equals&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;1&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+                    tv_number.setVisibility&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;View.GONE&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+                    tv_number.setVisibility&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;View.VISIBLE&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                    tv_number.setText&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;productList.get&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;j&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getProductNumber&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt;;  
+                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;  
+  
+                &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;10&quot;&lt;/span&gt;.equals&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;productList.get&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;j&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getOrderItemStatus&lt;span class=&quot;o&quot;&gt;()))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+                    tv_status.setVisibility&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;View.VISIBLE&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                    tv_status.setText&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;售后待处理&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                    &amp;lt;span&amp;gt;&amp;lt;span&amp;gt;tv_status.setTag&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;j&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&amp;lt;/span&amp;gt;&amp;lt;/span&amp;gt;  
+                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;11&quot;&lt;/span&gt;.equals&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;productList.get&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;j&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getOrderItemStatus&lt;span class=&quot;o&quot;&gt;()))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+                    tv_status.setVisibility&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;View.VISIBLE&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                    tv_status.setText&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;待买家退货&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                    &amp;lt;span&amp;gt;&amp;lt;span&amp;gt;tv_status.setTag&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;j&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&amp;lt;/span&amp;gt;&amp;lt;/span&amp;gt;  
+                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;12&quot;&lt;/span&gt;.equals&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;productList.get&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;j&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getOrderItemStatus&lt;span class=&quot;o&quot;&gt;()))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+                    tv_status.setVisibility&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;View.VISIBLE&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                    tv_status.setText&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;待卖家确认&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                    &amp;lt;span &lt;span class=&quot;nv&quot;&gt;style&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;font-size:18px;color:#FF0000;&quot;&lt;/span&gt;&amp;gt;&amp;lt;strong&amp;gt;&amp;lt;/strong&amp;gt;&amp;lt;/span&amp;gt;&amp;lt;span&amp;gt;&amp;lt;span&amp;gt;tv_status.setTag&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;j&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&amp;lt;/span&amp;gt;&amp;lt;/span&amp;gt;  
+                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;13&quot;&lt;/span&gt;.equals&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;productList.get&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;j&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getOrderItemStatus&lt;span class=&quot;o&quot;&gt;()))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+                    tv_status.setVisibility&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;View.VISIBLE&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                    tv_status.setText&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;理赔成功&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                    &amp;lt;span&amp;gt;&amp;lt;span&amp;gt;tv_status.setTag&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;j&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&amp;lt;/span&amp;gt;&amp;lt;/span&amp;gt;&amp;lt;span &lt;span class=&quot;nv&quot;&gt;style&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;color:#FF0000;&quot;&lt;/span&gt;&amp;gt;&amp;lt;strong&amp;gt;&amp;lt;span &lt;span class=&quot;nv&quot;&gt;style&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;font-size:18px;&quot;&lt;/span&gt;&amp;gt;&amp;lt;/span&amp;gt;&amp;lt;/strong&amp;gt;&amp;lt;/span&amp;gt;  
+                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;14&quot;&lt;/span&gt;.equals&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;productList.get&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;j&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getOrderItemStatus&lt;span class=&quot;o&quot;&gt;()))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+                    tv_status.setVisibility&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;View.VISIBLE&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                    tv_status.setText&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;维权完成&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                    &amp;lt;span&amp;gt;&amp;lt;span&amp;gt;tv_status.setTag&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;j&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&amp;lt;/span&amp;gt;&amp;lt;/span&amp;gt;  
+                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;15&quot;&lt;/span&gt;.equals&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;productList.get&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;j&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getOrderItemStatus&lt;span class=&quot;o&quot;&gt;()))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+                    tv_status.setVisibility&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;View.VISIBLE&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                    tv_status.setText&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;理赔中&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                    &amp;lt;span&amp;gt;&amp;lt;span&amp;gt;tv_status.setTag&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;j&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&amp;lt;/span&amp;gt;&amp;lt;/span&amp;gt;  
+                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+                    tv_status.setVisibility&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;View.GONE&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;  
+                tv_status.setOnClickListener&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;new OnClickListener&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+  
+                    @Override  
+                    public void onClick&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;View v&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;  
+                        switchStatusTwo&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;v&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                        &amp;lt;span &lt;span class=&quot;nv&quot;&gt;style&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;font-size:18px;&quot;&lt;/span&gt;&amp;gt;&amp;lt;strong&amp;gt;&amp;lt;span &lt;span class=&quot;nv&quot;&gt;style&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;color:#FF0000;&quot;&lt;/span&gt;&amp;gt;&amp;lt;/span&amp;gt;&amp;lt;/strong&amp;gt;&amp;lt;/span&amp;gt;int nowPosition &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;int&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; tv_status.getTag&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;;  
+                        Intent intent &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; new Intent&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;mContext, RefundContentActivity.class&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                        intent.putExtra&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;orderNo&quot;&lt;/span&gt;, mListData.get&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;position&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.get&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getOrderNo&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt;;// getProductList&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;.get&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;position&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getOrderNo&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;  
+                        intent.putExtra&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;OrderItemId&quot;&lt;/span&gt;,  
+                                mListData.get&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;position&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.get&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getProductList&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;.get&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;nowPosition&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getOrderItemId&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt;;  
+                        intent.putExtra&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;type&quot;&lt;/span&gt;, &lt;span class=&quot;s2&quot;&gt;&quot;001&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;// 商品type  
+                        intent.addFlags&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Intent.FLAG_ACTIVITY_NEW_TASK&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                        mContext.startActivity&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;intent&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+                    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;  
+                &lt;span class=&quot;o&quot;&gt;})&lt;/span&gt;;  
+                linear_group.addView&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;viewTwo&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;;  
+            &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;  
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;大家看见没就是这两句代码解决了我的困扰，动态的添加布局的时候肯定是需要遍历的，在遍历的时候为每一个控件设置一个标签&lt;code class=&quot;highlighter-rouge&quot;&gt;tv_status.setTag(j)&lt;/code&gt;，那么实际上每一个图片对应的位置就是循环遍历的&lt;code class=&quot;highlighter-rouge&quot;&gt;int &lt;/code&gt;值 j；&lt;code class=&quot;highlighter-rouge&quot;&gt;int nowPosition = (int) tv_status.getTag();&lt;/code&gt;在用的时候拿出来就可以了；&lt;/p&gt;
+
+&lt;p&gt;好了，今天的博客就到这，算是对上一遍的细节补充，同时也记录一下成长的过程!&lt;/p&gt;
+</description>
+        <pubDate>Thu, 18 May 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2017/05/about-listview-2/</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/05/about-listview-2/</guid>
+        
+        
+      </item>
+    
+      <item>
+        <title>解决listview层层嵌套的另外一种思路</title>
+        <description>&lt;p&gt;最近项目涉及到订单的优化，比较忙没能及时更新博客，今天就吧自己在自己项目中遇到的listview嵌套的相关解决办法展现给大家。废话不多说，先给大家看下产品给的设计ui图：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/resourse/我的订单UI图.jpeg&quot; alt=&quot;我的订单UI图.jpeg&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;这是商品订单列表的一个效果图，下面我们来分析一下这个效果图，就会发现里面涉及到了层层的嵌套，来看下面一张图：&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/resourse/我的订单分析图.png&quot; alt=&quot;我的订单分析图.png&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;上面的标志我想大家都能看懂，其实里里外外涉及到三层的嵌套。那我们来分析一下，应该如何去实现呢？&lt;/p&gt;
+
+&lt;p&gt;第一层：我想这个是毋庸置疑的要用listview或者RecycleView或者Gridview吧，这三个你可以选一个，由于我们的工程还是eclipse在开发，我就用的项目中自带XlistView，   不过不管用什么都可以的。&lt;/p&gt;
+
+&lt;p&gt;第二层：仔细一看这个第二层还是要用listview的啊，是不是瞬间就有一种懵逼的感觉啊。&lt;/p&gt;
+
+&lt;p&gt;第三层：fuck，咋一看又要用个gridview嵌套在里面呢？&lt;/p&gt;
+
+&lt;p&gt;这样一分析，是不是瞬间就不想写代码了呢 ？&lt;/p&gt;
+
+&lt;p&gt;山穷水复疑无路，柳暗花明又一村。当进入死胡同的时候，何妨不转换下思路呢？我当时想的就是不用层层嵌套，我动态的添加布局应该也能实现，敢想敢做，我一颗也没耽误就去码代码了。&lt;/p&gt;
+
+&lt;p&gt;第一层的item的布局先写出来：&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;?xml &lt;span class=&quot;nv&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;1.0&quot;&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;encoding&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;utf-8&quot;&lt;/span&gt;?&amp;gt;  
+&amp;lt;LinearLayout xmlns:android&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;http://schemas.android.com/apk/res/android&quot;&lt;/span&gt;  
+    android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;match_parent&quot;&lt;/span&gt;  
+    android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;match_parent&quot;&lt;/span&gt;  
+    android:orientation&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;vertical&quot;&lt;/span&gt; &amp;gt;  
+  
+    &amp;lt;View  
+        android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;match_parent&quot;&lt;/span&gt;  
+        android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt;  
+        android:background&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;#F7F7F7&quot;&lt;/span&gt; /&amp;gt;  
+  
+    &amp;lt;LinearLayout  
+        android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;match_parent&quot;&lt;/span&gt;  
+        android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+        android:orientation&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;horizontal&quot;&lt;/span&gt;  
+        android:paddingBottom&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt;  
+        android:paddingTop&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt; &amp;gt;  
+  
+        &amp;lt;View  
+            android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;4dp&quot;&lt;/span&gt;  
+            android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;16dp&quot;&lt;/span&gt;  
+            android:background&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;#FF4B0F&quot;&lt;/span&gt; /&amp;gt;  
+  
+        &amp;lt;TextView  
+            android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/tv_order_time&quot;&lt;/span&gt;  
+            android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_marginLeft&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;12dp&quot;&lt;/span&gt;  
+            android:text&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;2017-4-7&quot;&lt;/span&gt;  
+            android:textSize&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;13sp&quot;&lt;/span&gt;  
+            android:textStyle&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;bold&quot;&lt;/span&gt; /&amp;gt;  
+  
+        &amp;lt;TextView  
+            android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;0dp&quot;&lt;/span&gt;  
+            android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_weight&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;1&quot;&lt;/span&gt; /&amp;gt;  
+  
+        &amp;lt;TextView  
+            android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/tv_order_paynum&quot;&lt;/span&gt;  
+            android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_marginRight&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt;  
+            android:text&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;支付订单号：SS22344dada4445&quot;&lt;/span&gt;  
+            android:textStyle&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;bold&quot;&lt;/span&gt;  
+            android:textSize&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;13sp&quot;&lt;/span&gt; /&amp;gt;  
+    &amp;lt;/LinearLayout&amp;gt;  
+  
+&amp;lt;span &lt;span class=&quot;nv&quot;&gt;style&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;color:#FF0000;&quot;&lt;/span&gt;&amp;gt;&amp;lt;strong&amp;gt; &amp;lt;span &lt;span class=&quot;nv&quot;&gt;style&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;font-size:18px;&quot;&lt;/span&gt;&amp;gt;   &amp;lt;LinearLayout  
+        android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/linear_container&quot;&lt;/span&gt;  
+        android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;match_parent&quot;&lt;/span&gt;  
+        android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+        android:orientation&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;vertical&quot;&lt;/span&gt; &amp;gt;  
+    &amp;lt;/LinearLayout&amp;gt;&amp;lt;/span&amp;gt;&amp;lt;/strong&amp;gt;&amp;lt;/span&amp;gt;  
+  
+    &amp;lt;TextView  
+        android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/tv_line&quot;&lt;/span&gt;  
+        android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;match_parent&quot;&lt;/span&gt;  
+        android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;0.5dp&quot;&lt;/span&gt;  
+        android:layout_marginLeft&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt;  
+        android:layout_marginRight&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt;  
+        android:background&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;#E7E0E3&quot;&lt;/span&gt; /&amp;gt;  
+  
+    &amp;lt;LinearLayout  
+        android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/linear_money&quot;&lt;/span&gt;  
+        android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;match_parent&quot;&lt;/span&gt;  
+        android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+        android:layout_marginTop&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt;  
+        android:gravity&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;end&quot;&lt;/span&gt;  
+        android:orientation&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;horizontal&quot;&lt;/span&gt; &amp;gt;  
+  
+        &amp;lt;TextView  
+            android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/tv_goods_num&quot;&lt;/span&gt;  
+            android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_centerInParent&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;true&quot;&lt;/span&gt;  
+            android:layout_marginLeft&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;12dp&quot;&lt;/span&gt;  
+            android:text&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;共7件商品&quot;&lt;/span&gt;  
+            android:textColor&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;#767480&quot;&lt;/span&gt; /&amp;gt;  
+  
+        &amp;lt;TextView  
+            android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_centerInParent&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;true&quot;&lt;/span&gt;  
+            android:layout_marginLeft&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;12dp&quot;&lt;/span&gt;  
+            android:text&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;合计：&quot;&lt;/span&gt;  
+            android:textColor&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;#767480&quot;&lt;/span&gt; /&amp;gt;  
+  
+        &amp;lt;TextView  
+            android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/tv_goods_total_money&quot;&lt;/span&gt;  
+            android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_centerInParent&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;true&quot;&lt;/span&gt;  
+            android:layout_marginLeft&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;4dp&quot;&lt;/span&gt;  
+            android:paddingRight&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt;  
+            android:text&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;￥ 3850.00&quot;&lt;/span&gt;  
+            android:textStyle&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;bold&quot;&lt;/span&gt; /&amp;gt;  
+  
+        &amp;lt;TextView  
+            android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/tv_goods_transfee&quot;&lt;/span&gt;  
+            android:visibility&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;gone&quot;&lt;/span&gt;  
+            android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_centerInParent&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;true&quot;&lt;/span&gt;  
+            android:layout_marginRight&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt;  
+            android:text&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;（含运费 ￥ 5）&quot;&lt;/span&gt;  
+            android:textColor&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;#767480&quot;&lt;/span&gt; /&amp;gt;  
+    &amp;lt;/LinearLayout&amp;gt;  
+  
+    &amp;lt;LinearLayout  
+        android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/linear_order_button&quot;&lt;/span&gt;  
+        android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;match_parent&quot;&lt;/span&gt;  
+        android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+        android:layout_marginTop&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt;  
+        android:gravity&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;end&quot;&lt;/span&gt;  
+        android:orientation&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;horizontal&quot;&lt;/span&gt;  
+        android:paddingBottom&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;12dp&quot;&lt;/span&gt;  
+        android:paddingLeft&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;4dp&quot;&lt;/span&gt;  
+        android:paddingRight&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt;  
+        android:paddingTop&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;4dp&quot;&lt;/span&gt; &amp;gt;  
+  
+        &amp;lt;TextView  
+            android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/tv_order_cancle&quot;&lt;/span&gt;  
+            android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_marginRight&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@dimen/size_10dp&quot;&lt;/span&gt;  
+            android:background&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@drawable/shape_light_bg&quot;&lt;/span&gt;  
+            android:paddingBottom&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;6dp&quot;&lt;/span&gt;  
+            android:paddingLeft&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt;  
+            android:paddingRight&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;6dp&quot;&lt;/span&gt;  
+            android:paddingTop&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;6dp&quot;&lt;/span&gt;  
+            android:text&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;取消订单&quot;&lt;/span&gt;  
+            android:textColor&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;#9291A4&quot;&lt;/span&gt;  
+            android:textSize&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@dimen/text_size14&quot;&lt;/span&gt; /&amp;gt;  
+  
+        &amp;lt;TextView  
+            android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/tv_order_check&quot;&lt;/span&gt;  
+            android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:background&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@drawable/shape_light_bg&quot;&lt;/span&gt;  
+            android:paddingBottom&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;6dp&quot;&lt;/span&gt;  
+            android:paddingLeft&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;12dp&quot;&lt;/span&gt;  
+            android:paddingRight&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;10dp&quot;&lt;/span&gt;  
+            android:paddingTop&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;6dp&quot;&lt;/span&gt;  
+            android:text&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;查看订单&quot;&lt;/span&gt;  
+            android:textColor&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;#9291A4&quot;&lt;/span&gt;  
+            android:textSize&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@dimen/text_size14&quot;&lt;/span&gt; /&amp;gt;  
+  
+        &amp;lt;TextView  
+            android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/tv_order_pay&quot;&lt;/span&gt;  
+            android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_marginLeft&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;10dp&quot;&lt;/span&gt;  
+            android:background&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@drawable/shape_eacrad_pay&quot;&lt;/span&gt;  
+            android:paddingBottom&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;6dp&quot;&lt;/span&gt;  
+            android:paddingLeft&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt;  
+            android:paddingRight&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;6dp&quot;&lt;/span&gt;  
+            android:paddingTop&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;6dp&quot;&lt;/span&gt;  
+            android:text&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;立即付款&quot;&lt;/span&gt;  
+            android:textColor&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;#FF6893&quot;&lt;/span&gt;  
+            android:textSize&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@dimen/text_size14&quot;&lt;/span&gt; /&amp;gt;  
+    &amp;lt;/LinearLayout&amp;gt;  
+    &amp;lt;ImageView  
+        android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/order_end_iv&quot;&lt;/span&gt;  
+        android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;match_parent&quot;&lt;/span&gt;  
+        android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;30dp&quot;&lt;/span&gt;  
+        android:layout_marginBottom&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt;  
+        android:contentDescription&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@null&quot;&lt;/span&gt;  
+        android:src&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@drawable/ic_nomore&quot;&lt;/span&gt; /&amp;gt;  
+&amp;lt;/LinearLayout&amp;gt;
+
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;上面的额布局代码中有一段我标红的不知道大家看见没？这个只是一个布局的容器，现在里面什么都没有，只是待会再代码中动态添加子布局的父容器而已.&lt;/p&gt;
+
+&lt;p&gt;大家在看第二层嵌套的布局：&lt;code class=&quot;highlighter-rouge&quot;&gt;add_order_view：&lt;/code&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;?xml &lt;span class=&quot;nv&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;1.0&quot;&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;encoding&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;utf-8&quot;&lt;/span&gt;?&amp;gt;  
+&amp;lt;LinearLayout xmlns:android&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;http://schemas.android.com/apk/res/android&quot;&lt;/span&gt;  
+    android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;match_parent&quot;&lt;/span&gt;  
+    android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;match_parent&quot;&lt;/span&gt;  
+    android:orientation&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;vertical&quot;&lt;/span&gt; &amp;gt;  
+  
+    &amp;lt;TextView  
+        android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/tv_order_ordernum&quot;&lt;/span&gt;  
+        android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;match_parent&quot;&lt;/span&gt;  
+        android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+        android:background&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;#F7F7F7&quot;&lt;/span&gt;  
+        android:paddingTop&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt;  
+        android:paddingRight&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt;  
+        android:paddingLeft&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;16dp&quot;&lt;/span&gt;  
+        android:paddingBottom&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt;  
+        android:text&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;订单编号：SS22344dada4445&quot;&lt;/span&gt;  
+        android:textColor&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;#767480&quot;&lt;/span&gt;  
+        android:textSize&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;14sp&quot;&lt;/span&gt; /&amp;gt;  
+  
+    &amp;lt;LinearLayout  
+        android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;match_parent&quot;&lt;/span&gt;  
+        android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+        android:gravity&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;center_vertical&quot;&lt;/span&gt;  
+        android:orientation&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;horizontal&quot;&lt;/span&gt;  
+        android:paddingTop&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt;  
+        android:paddingRight&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt;  
+        android:paddingLeft&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;16dp&quot;&lt;/span&gt;  
+        android:paddingBottom&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt; &amp;gt;  
+  
+        &amp;lt;ImageView  
+            android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:src&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@drawable/bq&quot;&lt;/span&gt; /&amp;gt;  
+  
+        &amp;lt;TextView  
+            android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/tv_order_merchant_name&quot;&lt;/span&gt;  
+            android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_marginLeft&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt;  
+            android:text&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;美罗城购物中心&quot;&lt;/span&gt;  
+            android:textColor&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;#767480&quot;&lt;/span&gt;  
+            android:textSize&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;14sp&quot;&lt;/span&gt; /&amp;gt;  
+  
+        &amp;lt;TextView  
+            android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;0dp&quot;&lt;/span&gt;  
+            android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_weight&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;1&quot;&lt;/span&gt; /&amp;gt;  
+  
+        &amp;lt;TextView  
+            android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/tv_order_status&quot;&lt;/span&gt;  
+            android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_marginLeft&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;16dp&quot;&lt;/span&gt;  
+            android:text&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;待支付&quot;&lt;/span&gt;  
+            android:textColor&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;#FF6893&quot;&lt;/span&gt;  
+            android:textSize&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;14sp&quot;&lt;/span&gt;  
+            android:textStyle&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;bold&quot;&lt;/span&gt; /&amp;gt;  
+    &amp;lt;/LinearLayout&amp;gt;  
+  
+&amp;lt;span &lt;span class=&quot;nv&quot;&gt;style&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;font-size:18px;color:#FF0000;&quot;&lt;/span&gt;&amp;gt;&amp;lt;strong&amp;gt;    &amp;lt;HorizontalScrollView  
+        android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+        android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+        android:scrollbars&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@null&quot;&lt;/span&gt;  
+        android:padding&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt; &amp;gt;  
+  
+        &amp;lt;LinearLayout  
+            android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/linear_group&quot;&lt;/span&gt;  
+            android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:orientation&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;horizontal&quot;&lt;/span&gt; &amp;gt;  
+  
+        &amp;lt;/LinearLayout&amp;gt;  
+    &amp;lt;/HorizontalScrollView&amp;gt;&amp;lt;/strong&amp;gt;&amp;lt;/span&amp;gt;  
+  
+&lt;span class=&quot;gp&quot;&gt;&amp;lt;/LinearLayout&amp;gt; &lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+&lt;p&gt;啥都没有是吧？同时也要看我布局标红放大的部分，HorizontalScrollView能保证图片的水平滚动，里面的额linearlayout也是动态添加布局的容器。&lt;/p&gt;
+
+&lt;p&gt;接下来就是最里面一层，其实很简单的布局就是一张图片，我也贴出来给大家看看：&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;add_order_view_image：&lt;/code&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;?xml &lt;span class=&quot;nv&quot;&gt;version&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;1.0&quot;&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;encoding&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;utf-8&quot;&lt;/span&gt;?&amp;gt;  
+&amp;lt;RelativeLayout xmlns:android&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;http://schemas.android.com/apk/res/android&quot;&lt;/span&gt;  
+    android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+    android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+    android:padding&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;8dp&quot;&lt;/span&gt; &amp;gt;  
+  
+    &amp;lt;RelativeLayout  
+        android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/rela_1&quot;&lt;/span&gt;  
+        android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;80dp&quot;&lt;/span&gt;  
+        android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;80dp&quot;&lt;/span&gt; &amp;gt;  
+  
+        &amp;lt;ImageView  
+            android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/iv_goods&quot;&lt;/span&gt;  
+            android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;80dp&quot;&lt;/span&gt;  
+            android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;80dp&quot;&lt;/span&gt;  
+            android:layout_marginTop&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;6dp&quot;&lt;/span&gt;  
+            android:src&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@drawable/df2&quot;&lt;/span&gt; /&amp;gt;  
+  
+        &amp;lt;ImageView  
+            android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/iv_gift&quot;&lt;/span&gt;  
+            android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_marginTop&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;6dp&quot;&lt;/span&gt;  
+            android:src&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@drawable/goods_tag&quot;&lt;/span&gt; /&amp;gt;  
+  
+  
+        &amp;lt;TextView  
+            android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/tv_status&quot;&lt;/span&gt;  
+            android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;80dp&quot;&lt;/span&gt;  
+            android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_alignBottom&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/iv_goods&quot;&lt;/span&gt;  
+            android:layout_centerHorizontal&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;true&quot;&lt;/span&gt;  
+            android:layout_centerVertical&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;true&quot;&lt;/span&gt;  
+            android:text&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;已售罄&quot;&lt;/span&gt;  
+            android:background&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;#A6000000&quot;&lt;/span&gt;  
+            android:gravity&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;center&quot;&lt;/span&gt;  
+            android:textColor&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@color/White&quot;&lt;/span&gt;  
+            android:textSize&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;12sp&quot;&lt;/span&gt; /&amp;gt;  
+    &amp;lt;/RelativeLayout&amp;gt;  
+  
+        &amp;lt;TextView  
+            android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/tv_number&quot;&lt;/span&gt;  
+            android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:background&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@drawable/shape_order_list_circle&quot;&lt;/span&gt;  
+            android:layout_marginLeft&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;-12dp&quot;&lt;/span&gt;  
+            android:layout_toRightOf&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/rela_1&quot;&lt;/span&gt;  
+            android:padding&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;4dp&quot;&lt;/span&gt;  
+            android:text&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;17&quot;&lt;/span&gt;  
+            android:textColor&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@color/White&quot;&lt;/span&gt;  
+            android:textSize&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;12sp&quot;&lt;/span&gt; /&amp;gt;  
+       &amp;lt;TextView  
+            android:id&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/tv_descripe&quot;&lt;/span&gt;  
+            android:layout_width&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;200dp&quot;&lt;/span&gt;  
+            android:layout_height&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;wrap_content&quot;&lt;/span&gt;  
+            android:layout_toRightOf&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;@+id/rela_1&quot;&lt;/span&gt;  
+            android:layout_centerInParent&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;true&quot;&lt;/span&gt;  
+            android:padding&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;4dp&quot;&lt;/span&gt;  
+            android:layout_marginRight&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;30dp&quot;&lt;/span&gt;  
+            android:visibility&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;gone&quot;&lt;/span&gt;  
+            android:text&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;我是商品&quot;&lt;/span&gt;  
+            android:textSize&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;12sp&quot;&lt;/span&gt; /&amp;gt;  
+&amp;lt;/RelativeLayout&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+
+</description>
+        <pubDate>Wed, 10 May 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2017/05/about-listview-1/</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/05/about-listview-1/</guid>
+        
+        
+      </item>
+    
+  </channel>
+</rss>

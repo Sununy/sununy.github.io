@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <title>解决listview层层嵌套的另外一种思路(细节说明)</title>
+  <meta name="description" content="上一篇提到用动态添加布局来解决listview的层层嵌套，由于这种做法我用到过很多次，所以做起来也很顺手，但是这一次的需求和上一次的稍微有点不同，导致最后快要提测的时候功能还没实现，当时就急了。。。。">
+  <meta name="author" content="Wei Wang">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="解决listview层层嵌套的另外一种思路(细节说明)">
+  <meta name="twitter:description" content="上一篇提到用动态添加布局来解决listview的层层嵌套，由于这种做法我用到过很多次，所以做起来也很顺手，但是这一次的需求和上一次的稍微有点不同，导致最后快要提测的时候功能还没实现，当时就急了。。。。">
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="解决listview层层嵌套的另外一种思路(细节说明)">
+  <meta property="og:description" content="上一篇提到用动态添加布局来解决listview的层层嵌套，由于这种做法我用到过很多次，所以做起来也很顺手，但是这一次的需求和上一次的稍微有点不同，导致最后快要提测的时候功能还没实现，当时就急了。。。。">
+  
+  <link rel="icon" type="image/png" href="/assets/images/favicon.png" />
+  <link href="/assets/images/favicon.png" rel="shortcut icon" type="image/png">
+  
+  <link rel="stylesheet" href="/css/main.css">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <link rel="canonical" href="http://localhost:4000/2017/05/about-listview-2/">
+  <link rel="alternate" type="application/rss+xml" title="Hukie's Blog" href="http://localhost:4000/feed.xml">
+  
+  <meta name="google-site-verification" content="1-1ZlHoRvM0T2FqPbW2S-qLgYXN6rsn52kErlMPd_gw" />
+  
+</head>
+
+
+  <body>
+
+    <span class="mobile btn-mobile-menu">
+        <i class="fa fa-list btn-mobile-menu__icon"></i>
+        <i class="fa fa-angle-up btn-mobile-close__icon hidden"></i>
+    </span>
+    
+    <header class="panel-cover panel-cover--collapsed" style="background-image: url('/assets/images/background-cover.jpg')">
+  <div class="panel-main">
+
+    <div class="panel-main__inner panel-inverted">
+    <div class="panel-main__content">
+
+        <a href="/#blog" title="前往 Hukie's Blog 的主页" class="blog-button"><img src="/assets/images/avatar.jpg" width="80" alt="Hukie's Blog logo" class="panel-cover__logo logo" /></a>
+        <h1 class="panel-cover__title panel-title"><a href="/#blog" title="link to homepage for Hukie's Blog" class="blog-button">Hukie's Blog</a></h1>
+        
+        <span class="panel-cover__subtitle panel-subtitle">A Blog About Android And Notes.</span>
+        
+        <hr class="panel-cover__divider" />
+        <p class="panel-cover__description">Learning To Be A Better Android Developer.</p>
+        <hr class="panel-cover__divider panel-cover__divider--secondary" />
+        
+        
+        <p class="panel-cover__description">Thank For Your Visit.</p>
+        
+        
+        <div class="navigation-wrapper">
+          <div>
+            <nav class="cover-navigation cover-navigation--primary">
+              <ul class="navigation">
+                <li class="navigation__item"><a href="/#blog" title="Visit blog" class="blog-button">Blog</a></li>
+                
+              </ul>
+            </nav>
+          </div>
+          
+          <div><nav class="cover-navigation navigation--social">
+  <ul class="navigation">
+
+  
+
+  
+  <!-- Github -->
+  <li class="navigation__item">
+    <a href="https://github.com/sununy" title="@sununy 的 Github" target="_blank">
+      <i class='social fa fa-github'></i>
+      <span class="label">Github</span>
+    </a>
+  </li>
+  
+  
+  
+
+  
+
+  <!-- RSS -->
+  <li class="navigation__item">
+    <a href="/feed.xml" rel="author" title="RSS" target="_blank">
+      <i class='social fa fa-rss'></i>
+      <span class="label">RSS</span>
+    </a>
+  </li>
+
+  
+  <!-- Email -->
+  <li class="navigation__item">
+    <a href="mailto:whutzhanghu@163.com" title="Contact me">
+      <i class='social fa fa-envelope'></i>
+      <span class="label">Email</span>
+    </a>
+  </li>
+  
+
+  </ul>
+</nav>
+</div>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="panel-cover--overlay cover-black"></div>
+    
+  </div>
+</header>
+
+
+    <div class="content-wrapper">
+        <div class="content-wrapper__inner">
+            <article class="post-container post-container--single" itemscope itemtype="http://schema.org/BlogPosting">
+  <header class="post-header">
+    <div class="post-meta">
+      <time datetime="2017-05-18 00:00:00 +0800" itemprop="datePublished" class="post-meta__date date">2017-05-18</time> &#8226; <span class="post-meta__tags tags"></span>
+    </div>
+    <h1 class="post-title">解决listview层层嵌套的另外一种思路(细节说明)</h1>
+  </header>
+
+  <section class="post">
+    <p>上一篇提到用动态添加布局来解决listview的层层嵌套，由于这种做法我用到过很多次，所以做起来也很顺手，但是这一次的需求和上一次的稍微有点不同，导致最后快要提测的时候功能还没实现，当时就急了。。。。</p>
+
+<p>先给大家看下上次实现的效果:</p>
+
+<p><img src="/resourse/about-listview(1).gif" alt="about-listview(1).gif" /></p>
+
+<p>由于上一次的gif没有给大家展示横向的滑动，今天给补上。
+但是现在我想问大家如果点击横向滑动的那几个小图片，会跳转到哪呢？
+下面再给大家展示：</p>
+
+<p><img src="/resourse/about-listview(2).gif" alt="about-listview(2).gif" /></p>
+
+<p>大家可以看到不管点击哪个图片都是跳到订单详情界面，为什么呢？因为点击事件是对整个的linearlayout做的处理，如果想对单独的imageview进行点击事件呢？</p>
+
+<p>可能小伙伴会直接说直接对imageview加上点击事件不就得了？确实是加上点击事件可以跳转，但是如果问题这么简单我也不会问大家了，我问大家一个问题，你如何知晓你是点击的哪个位置？大家看上面的示意图，第一行有6个图片，你随便点击一张图片，你可能知道点击的是哪一张，但是程序知道你点击的位置吗？如果你要把你点击的这张图片背后的信息传递到下个界面去，怎么办呢？其实，这就是困扰我的问题，当时没有第一时间想到解决办法，心里很慌，最后冷静下来才找到解决方案，下面大家再看效果：</p>
+
+<p>大家看的见点击不同的售后状态跳转到售后详情界面的展现也是不一样的，那就说明已经找到了点击的位置，同样也正确的把相关的信息传递过去了。
+ 那具体的是怎么实现的呢？其实就是在上一次的代码中加了一句代码：</p>
+
+<div class="language-bash highlighter-rouge"><pre class="highlight"><code><span class="k">for</span> <span class="o">(</span>int j <span class="o">=</span> 0; j &lt; productList.size<span class="o">()</span>; j++<span class="o">)</span> <span class="o">{</span>  
+                View viewTwo <span class="o">=</span> mInflater.inflate<span class="o">(</span>R.layout.add_order_view_image, null<span class="o">)</span>;  
+                ImageView iv_goods <span class="o">=</span> <span class="o">(</span>ImageView<span class="o">)</span> viewTwo.findViewById<span class="o">(</span>R.id.iv_goods<span class="o">)</span>;  
+                ImageView iv_gift <span class="o">=</span> <span class="o">(</span>ImageView<span class="o">)</span> viewTwo.findViewById<span class="o">(</span>R.id.iv_gift<span class="o">)</span>;  
+                TextView tv_number <span class="o">=</span> <span class="o">(</span>TextView<span class="o">)</span> viewTwo.findViewById<span class="o">(</span>R.id.tv_number<span class="o">)</span>;  
+                final TextView tv_status <span class="o">=</span> <span class="o">(</span>TextView<span class="o">)</span> viewTwo.findViewById<span class="o">(</span>R.id.tv_status<span class="o">)</span>;  
+                TextView tv_descripe <span class="o">=</span> <span class="o">(</span>TextView<span class="o">)</span> viewTwo.findViewById<span class="o">(</span>R.id.tv_descripe<span class="o">)</span>;  
+                <span class="k">if</span> <span class="o">(</span>productList.size<span class="o">()</span> <span class="o">==</span> 1<span class="o">)</span> <span class="o">{</span>  
+                    tv_descripe.setVisibility<span class="o">(</span>View.VISIBLE<span class="o">)</span>;  
+                    tv_descripe.setText<span class="o">(</span>productList.get<span class="o">(</span>j<span class="o">)</span>.getProductName<span class="o">())</span>;  
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>  
+                    tv_descripe.setVisibility<span class="o">(</span>View.GONE<span class="o">)</span>;  
+                <span class="o">}</span>  
+                ImageUtils.display<span class="o">(</span>R.drawable.df2, productList.get<span class="o">(</span>j<span class="o">)</span>.getProductImage<span class="o">()</span>, iv_goods<span class="o">)</span>;  
+                <span class="k">if</span> <span class="o">(</span><span class="s2">"0"</span>.equals<span class="o">(</span>productList.get<span class="o">(</span>j<span class="o">)</span>.getIsGift<span class="o">()))</span> <span class="o">{</span> // 不是赠品  
+                    iv_gift.setVisibility<span class="o">(</span>View.GONE<span class="o">)</span>;  
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>  
+                    iv_gift.setVisibility<span class="o">(</span>View.VISIBLE<span class="o">)</span>;  
+                <span class="o">}</span>  
+                <span class="k">if</span> <span class="o">(</span>productList.get<span class="o">(</span>j<span class="o">)</span>.getProductNumber<span class="o">()</span>.equals<span class="o">(</span><span class="s2">"1"</span><span class="o">))</span> <span class="o">{</span>  
+                    tv_number.setVisibility<span class="o">(</span>View.GONE<span class="o">)</span>;  
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>  
+                    tv_number.setVisibility<span class="o">(</span>View.VISIBLE<span class="o">)</span>;  
+                    tv_number.setText<span class="o">(</span>productList.get<span class="o">(</span>j<span class="o">)</span>.getProductNumber<span class="o">())</span>;  
+                <span class="o">}</span>  
+  
+                <span class="k">if</span> <span class="o">(</span><span class="s2">"10"</span>.equals<span class="o">(</span>productList.get<span class="o">(</span>j<span class="o">)</span>.getOrderItemStatus<span class="o">()))</span> <span class="o">{</span>  
+                    tv_status.setVisibility<span class="o">(</span>View.VISIBLE<span class="o">)</span>;  
+                    tv_status.setText<span class="o">(</span><span class="s2">"售后待处理"</span><span class="o">)</span>;  
+                    &lt;span&gt;&lt;span&gt;tv_status.setTag<span class="o">(</span>j<span class="o">)</span>&lt;/span&gt;&lt;/span&gt;  
+                <span class="o">}</span> <span class="k">else if</span> <span class="o">(</span><span class="s2">"11"</span>.equals<span class="o">(</span>productList.get<span class="o">(</span>j<span class="o">)</span>.getOrderItemStatus<span class="o">()))</span> <span class="o">{</span>  
+                    tv_status.setVisibility<span class="o">(</span>View.VISIBLE<span class="o">)</span>;  
+                    tv_status.setText<span class="o">(</span><span class="s2">"待买家退货"</span><span class="o">)</span>;  
+                    &lt;span&gt;&lt;span&gt;tv_status.setTag<span class="o">(</span>j<span class="o">)</span>&lt;/span&gt;&lt;/span&gt;  
+                <span class="o">}</span> <span class="k">else if</span> <span class="o">(</span><span class="s2">"12"</span>.equals<span class="o">(</span>productList.get<span class="o">(</span>j<span class="o">)</span>.getOrderItemStatus<span class="o">()))</span> <span class="o">{</span>  
+                    tv_status.setVisibility<span class="o">(</span>View.VISIBLE<span class="o">)</span>;  
+                    tv_status.setText<span class="o">(</span><span class="s2">"待卖家确认"</span><span class="o">)</span>;  
+                    &lt;span <span class="nv">style</span><span class="o">=</span><span class="s2">"font-size:18px;color:#FF0000;"</span>&gt;&lt;strong&gt;&lt;/strong&gt;&lt;/span&gt;&lt;span&gt;&lt;span&gt;tv_status.setTag<span class="o">(</span>j<span class="o">)</span>&lt;/span&gt;&lt;/span&gt;  
+                <span class="o">}</span> <span class="k">else if</span> <span class="o">(</span><span class="s2">"13"</span>.equals<span class="o">(</span>productList.get<span class="o">(</span>j<span class="o">)</span>.getOrderItemStatus<span class="o">()))</span> <span class="o">{</span>  
+                    tv_status.setVisibility<span class="o">(</span>View.VISIBLE<span class="o">)</span>;  
+                    tv_status.setText<span class="o">(</span><span class="s2">"理赔成功"</span><span class="o">)</span>;  
+                    &lt;span&gt;&lt;span&gt;tv_status.setTag<span class="o">(</span>j<span class="o">)</span>&lt;/span&gt;&lt;/span&gt;&lt;span <span class="nv">style</span><span class="o">=</span><span class="s2">"color:#FF0000;"</span>&gt;&lt;strong&gt;&lt;span <span class="nv">style</span><span class="o">=</span><span class="s2">"font-size:18px;"</span>&gt;&lt;/span&gt;&lt;/strong&gt;&lt;/span&gt;  
+                <span class="o">}</span> <span class="k">else if</span> <span class="o">(</span><span class="s2">"14"</span>.equals<span class="o">(</span>productList.get<span class="o">(</span>j<span class="o">)</span>.getOrderItemStatus<span class="o">()))</span> <span class="o">{</span>  
+                    tv_status.setVisibility<span class="o">(</span>View.VISIBLE<span class="o">)</span>;  
+                    tv_status.setText<span class="o">(</span><span class="s2">"维权完成"</span><span class="o">)</span>;  
+                    &lt;span&gt;&lt;span&gt;tv_status.setTag<span class="o">(</span>j<span class="o">)</span>&lt;/span&gt;&lt;/span&gt;  
+                <span class="o">}</span> <span class="k">else if</span> <span class="o">(</span><span class="s2">"15"</span>.equals<span class="o">(</span>productList.get<span class="o">(</span>j<span class="o">)</span>.getOrderItemStatus<span class="o">()))</span> <span class="o">{</span>  
+                    tv_status.setVisibility<span class="o">(</span>View.VISIBLE<span class="o">)</span>;  
+                    tv_status.setText<span class="o">(</span><span class="s2">"理赔中"</span><span class="o">)</span>;  
+                    &lt;span&gt;&lt;span&gt;tv_status.setTag<span class="o">(</span>j<span class="o">)</span>&lt;/span&gt;&lt;/span&gt;  
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>  
+                    tv_status.setVisibility<span class="o">(</span>View.GONE<span class="o">)</span>;  
+                <span class="o">}</span>  
+                tv_status.setOnClickListener<span class="o">(</span>new OnClickListener<span class="o">()</span> <span class="o">{</span>  
+  
+                    @Override  
+                    public void onClick<span class="o">(</span>View v<span class="o">)</span> <span class="o">{</span>  
+                        switchStatusTwo<span class="o">(</span>v<span class="o">)</span>;  
+                        &lt;span <span class="nv">style</span><span class="o">=</span><span class="s2">"font-size:18px;"</span>&gt;&lt;strong&gt;&lt;span <span class="nv">style</span><span class="o">=</span><span class="s2">"color:#FF0000;"</span>&gt;&lt;/span&gt;&lt;/strong&gt;&lt;/span&gt;int nowPosition <span class="o">=</span> <span class="o">(</span>int<span class="o">)</span> tv_status.getTag<span class="o">()</span>;  
+                        Intent intent <span class="o">=</span> new Intent<span class="o">(</span>mContext, RefundContentActivity.class<span class="o">)</span>;  
+                        intent.putExtra<span class="o">(</span><span class="s2">"orderNo"</span>, mListData.get<span class="o">(</span>position<span class="o">)</span>.get<span class="o">(</span>0<span class="o">)</span>.getOrderNo<span class="o">())</span>;// getProductList<span class="o">()</span>.get<span class="o">(</span>position<span class="o">)</span>.getOrderNo<span class="o">()</span>  
+                        intent.putExtra<span class="o">(</span><span class="s2">"OrderItemId"</span>,  
+                                mListData.get<span class="o">(</span>position<span class="o">)</span>.get<span class="o">(</span>0<span class="o">)</span>.getProductList<span class="o">()</span>.get<span class="o">(</span>nowPosition<span class="o">)</span>.getOrderItemId<span class="o">())</span>;  
+                        intent.putExtra<span class="o">(</span><span class="s2">"type"</span>, <span class="s2">"001"</span><span class="o">)</span>;// 商品type  
+                        intent.addFlags<span class="o">(</span>Intent.FLAG_ACTIVITY_NEW_TASK<span class="o">)</span>;  
+                        mContext.startActivity<span class="o">(</span>intent<span class="o">)</span>;  
+                    <span class="o">}</span>  
+                <span class="o">})</span>;  
+                linear_group.addView<span class="o">(</span>viewTwo<span class="o">)</span>;  
+            <span class="o">}</span>  
+</code></pre>
+</div>
+
+<p>大家看见没就是这两句代码解决了我的困扰，动态的添加布局的时候肯定是需要遍历的，在遍历的时候为每一个控件设置一个标签<code class="highlighter-rouge">tv_status.setTag(j)</code>，那么实际上每一个图片对应的位置就是循环遍历的<code class="highlighter-rouge">int </code>值 j；<code class="highlighter-rouge">int nowPosition = (int) tv_status.getTag();</code>在用的时候拿出来就可以了；</p>
+
+<p>好了，今天的博客就到这，算是对上一遍的细节补充，同时也记录一下成长的过程!</p>
+
+  </section>
+</article>
+
+<section class="read-more">
+   
+   
+   
+   
+   <div class="read-more-item">
+       <span class="read-more-item-dim">更早的文章</span>
+       <h2 class="post-list__post-title post-title"><a href="/2017/05/about-listview-1/" title="link to 解决listview层层嵌套的另外一种思路">解决listview层层嵌套的另外一种思路</a></h2>
+       <p class="excerpt">最近项目涉及到订单的优化，比较忙没能及时更新博客，今天就吧自己在自己项目中遇到的listview嵌套的相关解决办法展现给大家。废话不多说，先给大家看下产品给的设计ui图：这是商品订单列表的一个效果图，下面我们来分析一下这个效果图，就会发现里面涉及到了层层的嵌套，来看下面一张图：上面的标志我想大家都能看懂，其实里里外外涉及到三层的嵌套。那我们来分析一下，应该如何去实现呢？第一层：我想这个是毋庸置疑的要用listview或者RecycleView或者Gridview吧，这三个你可以选一个，由于...&hellip;</p>
+       <div class="post-list__meta"><time datetime="2017-05-10 00:00:00 +0800" class="post-list__meta--date date">2017-05-10</time> &#8226; <span class="post-list__meta--tags tags"></span><a class="btn-border-small" href=/2017/05/about-listview-1/>继续阅读</a></div>
+   </div>
+   
+</section>
+
+<section class="post-comments">
+  
+    <div id="disqus_thread"></div>
+    <script>
+    
+    var disqus_config = function () {
+        this.page.url = "http://localhost:4000/2017/05/about-listview-2/";
+        this.page.identifier = "/2017/05/about-listview-2/";
+    };
+
+    var disqus_shortname = 'vno-jekyll';
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+    </script>
+    <noscript>要查看<a href="http://disqus.com/?ref_noscript"> Disqus </a>评论，请启用 JavaScript</noscript>
+    
+  
+  
+  
+  
+</section>
+
+
+            <section class="footer">
+    <footer>
+    	<span class="footer__copyright">本站点采用<a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享 署名-非商业性使用-相同方式共享 4.0 国际 许可协议</a></span>
+        <span class="footer__copyright">由 <a href="https://jekyllrb.com">Jekyll</a> 于 2017-05-18 生成，感谢 <a href="https://www.digitalocean.com/?refcode=30ed2d146762">Digital Ocean</a> 为本站提供稳定的 VPS 服务</span>
+        <span class="footer__copyright">本站由 <a href="http://onev.cat">@onevcat</a> 创建，采用 <a href="https://github.com/onevcat/vno-jekyll">Vno - Jekyll</a> 作为主题，您可以在 GitHub 找到<a href="https://github.com/onevcat/OneV-s-Den">本站源码</a> - &copy; 2017</span>
+    </footer>
+</section>
+
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<script type="text/javascript" src="/js/main.js"></script>
+
+
+
+    
+  </body>
+
+</html>
